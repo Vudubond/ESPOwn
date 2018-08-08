@@ -417,6 +417,8 @@ function esp_help_mail(){
     help_section "Exim & Mail"; 
         help_command "exim-count" "Displays the number of messages in the exim queue";
         help_command "exim-stats-size" "Displays the size of the eximstats database";
+	help_command "suschmail" "Suspends Outgoing email for an email account";
+	help_command "ususchmail" "UNSuspends Outgoing email for an email account";
 }
 
 function suschmail(){
