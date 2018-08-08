@@ -439,7 +439,7 @@ DOM=$(echo $MAILADD | cut -d"@" -f2)
 ACCNAME=$(/scripts/whoowns $DOM)
 
 echo "----------------------------------------------------"
-echo "Functia de trimitere al contul de email $MAILADD a fost suspendata"
+echo "Functia de trimitere al contul de email $MAILADD a fost unsuspendata"
 
 uapi --user=$ACCNAME Email unsuspend_outgoing email=$MAILADD
 }
