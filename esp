@@ -411,7 +411,7 @@ function esp_help_ssl() {
 # Exim & Mail
 # -----------
 alias exim-count="exim -bpc";
-alias exim-stats-size="du -h --max-depth=0 /var/lib/mysql/eximstats/" ;
+alias exim-stats-size="du -h --max-depth=0 /var/cpanel/eximstats_db.sqlite3" ;
 
 function esp_help_mail(){
     help_section "Exim & Mail"; 
