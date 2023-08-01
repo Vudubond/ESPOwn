@@ -379,7 +379,7 @@ function esp_help_net() {
 # ------------------
 
 alias accounting_cruft_probe="esp_script_dl \"accounting_cruft_probe\" \"https://raw.githubusercontent.com/cPanelTechs/accounting_cruft_probe/master/accounting_cruft_probe\"";
-alias acctinfo="esp_script_dl \"acctinfo\" \" https://raw.githubusercontent.com/Vudubond/tech-acctinfo/master/acctinfo\"";
+alias acctinfo="esp_script_dl \"acctinfo\" \"https://raw.githubusercontent.com/Vudubond/tech-acctinfo/master/acctinfo\"";
 
 
 function acctinfo-marco() { dom="$1" ; if (echo $dom|egrep "\.") then u=$(/scripts/whoowns $dom); else tmp=$(egrep " $dom$" /etc/trueuserdomains|cut -d: -f1); u=$dom; dom=$tmp;fi; homedir=$(egrep "^$u:" /etc/passwd|cut -d":" -f6); www=$homedir/public_html/ ; echo -e "\n"$dom"\n"$u"\n"$www"\n"; fgrep -i spended /var/cpanel/users/$u; egrep "limit.*1$" /var/cpanel/users/$u; ssl=$homedir/ssl; }
