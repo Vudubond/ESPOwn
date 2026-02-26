@@ -554,6 +554,30 @@ function oddthings () {
     lsof -Pni |grep -vE ':80|:443|imap|pop3|named|cpdavd|courier|dovecot|exim|mysql|pure|pro|sshd|cpsrvd|spamd|ntpd';
 };
 
+# --- Gemini AI Integration ---
+function gemini() {
+    if [ -z "$GEMINI_API_KEY" ]; then
+        echo "Eroare: Exporta cheia intai: export GEMINI_API_KEY='cheia_ta'"
+        return 1
+    fi
+
+    local INPUT=""
+    if [ ! -t 0 ]; then INPUT=$(cat); fi
+    
+    local USER_PROMPT="$*"
+    local FULL_PROMPT="${USER_PROMPT}\n\nCONTEXT/DATE:\n${INPUT}"
+    
+    # Folosim python3 pentru JSON escape si parsing (standard pe majoritatea distro-urilor)
+    local ESCAPED_PROMPT=$(python3 -c "import json, sys; print(json.dumps(sys.argv[1]))" "$FULL_PROMPT")
+
+    local RESPONSE=$(curl -s https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY \
+        -H 'Content-Type: application/json' \
+        -X POST \
+        -d "{'contents': [{'parts':[{'text': $ESCAPED_PROMPT}]}]}")
+
+    echo "$RESPONSE" | python3 -c "import sys, json; d=json.load(sys.stdin); print(d['candidates'][0]['content']['parts'][0]['text'] if 'candidates' in d else 'Eroare API: ' + str(d))" 2>/dev/null
+}
+
 function esp_help_other() {
     help_section "Other and Special Commands";
         help_command "save_connected" "saves out the current ssh logins and dismisses the ssh login alert";
