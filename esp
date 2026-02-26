@@ -561,37 +561,38 @@ function gemini() {
         return 1
     fi
 
+    # Citim input-ul din pipe/stdin daca exista
     local INPUT=""
     if [ ! -t 0 ]; then INPUT=$(cat); fi
     
     local USER_PROMPT="$*"
     local FULL_PROMPT="${USER_PROMPT}\n\nCONTEXT/DATE:\n${INPUT}"
     
-    # Escape JSON pentru a preveni erori la caractere speciale
+    # Escape JSON corect folosind Python (evita erori la ghilimele/caractere speciale)
     local ESCAPED_PROMPT=$(python3 -c "import json, sys; print(json.dumps(sys.argv[1]))" "$FULL_PROMPT")
 
-    # Folosim formatul tau de curl cu header-ul X-goog-api-key
-    local RESPONSE=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent" \
+    # Am folosit modelul 'gemini-2.5-flash' pe endpoint-ul 'v1' (cel mai stabil)
+    local RESPONSE=$(curl -s -X POST "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}" \
         -H 'Content-Type: application/json' \
-        -H "X-goog-api-key: ${GEMINI_API_KEY}" \
-        -X POST \
         -d "{
-          'contents': [{
-            'parts':[{'text': $ESCAPED_PROMPT}]
+          \"contents\": [{
+            \"parts\":[{ \"text\": $ESCAPED_PROMPT }]
           }]
         }")
 
-    # Parsare rezultat
+    # Parsare si afisare inteligenta
     echo "$RESPONSE" | python3 -c "
 import sys, json
 try:
     data = json.load(sys.stdin)
-    if 'candidates' in data:
+    if 'candidates' in data and len(data['candidates']) > 0:
         print(data['candidates'][0]['content']['parts'][0]['text'])
+    elif 'error' in data:
+        print(f'Eroare API: {data[\"error\"].get(\"message\", \"Unknown error\")}')
     else:
-        print('Eroare API:', data.get('error', {}).get('message', 'Check API Key or Model Name'))
+        print('Raspuns neasteptat de la API. Verifica cheia sau modelul.')
 except Exception as e:
-    print('Eroare parsare JSON.')
+    print(f'Eroare la procesarea JSON: {e}')
 " 2>/dev/null
 }
 
